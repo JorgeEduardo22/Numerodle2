@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body{
+        background-color: rgba(56, 83, 4, 0.767);
+    }
+    .celula, .celulaPrincipal{
+        border-collapse: collapse;
+        border: 2px solid black;
+        margin: auto;
+        padding: 10px;
+        min-width: 100px;
+        text-align: center;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    #quadrado{
+        z-index: 100;
+        box-shadow: 1px 2px 2px 1px;
+        position: absolute;
+        top: 50%;
+        left: 40%;
+        border-radius: 20px;
+        height: 300px;
+        width: 300px;
+        display: none;
+        background-color: gray;
+        text-align: center;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-size: large;
+        animation: fadeIn 0.5s ease;
+    }
+    button{
+        border-radius: 5px;
+        border: rgba(88, 126, 19, 0.767);
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    button:hover{
+        background-color: lightgray;
+    }
+    input{
+        border-radius:5px;
+        border: rgba(88, 126, 19, 0.767);
+    }
+    h1, h3{
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    .aporratoda{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .celula{
+        opacity: 1;
+        animation: fadeIn 0.5s ease;
+    }
+    .divisivel{
+        justify-content: space-between;
+        align-items: end;
+    }
+    .divisores, .novosDivisores{
+        display: none;
+        height: fit-content;
+        width: auto;
+        border: red 2px;
+        background-color: white;
+        margin: auto;
+
+    }
+    .divisores .numero, .divisores .novoNumero{
+        display: flex;
+        border: 2px solid black;
+        padding: 1px;
+    }
+
+    .novosDivisores .numero, .novosDivisores .novoNumero{
+        display: flex;
+        border: 2px solid black;
+        padding: 1px;
+    }
+
+    .divisivel:hover .divisores, .divisivel:hover .novosDivisores{
+        display: flex;
+        flex-direction: row;
+    }
+    @keyframes fadeIn {
+        0%{
+            opacity: 0;
+            transform: translateY(-10px) ;
+        }
+
+        100%{
+            opacity: 1;
+            transform: translateY(0px);
+        }
+    }
+    
+</style>
+<body>
+    <div class="aporratoda">
+        <h1>Numerodle</h1>
+        <h3>Descubra o número e ganhe alguma coisa</h3>
+    <table>
+        <tr>
+            <td class="celulaPrincipal" id="numero">Número entre 0 e 1000</td>
+            <td class="celulaPrincipal divisivel">Divisível por: <div class="divisores" id="divisores"><div class="numero">2</div><div class="numero">3</div><div class="numero">4</div><div class="numero">5</div><div class="numero">6</div><div class="numero">7</div><div class="numero">8</div><div class="numero">9</div></div></td>
+            <td class="celulaPrincipal" id="unidade">Unidade</td>
+            <td class="celulaPrincipal" id="primo">Primo</td>
+            <td class="celulaPrincipal" id="tamanho">Maior ou menor</td>
+        </tr>
+
+    </table><br>
+    <div id="quadrado">Não foi dessa vez... <br><button onclick="tentarDeNovo()">Tentar novamente?</button></div>
+    <input id='texto' type="text" placeholder="Insira um número entre 0 e 1000">
+    <br>
+    <button onclick="criarColuna()">Verificar</button>
+    </div>
+    <script>
+    let numero = String(parseInt(Math.random() * 1000))
+    let recompensas = ['carro', 'aperto de mãos', 'cachorrinho', 'gatinho', 'Playstation', 'Xbox One', 'Nintendo Switch', 
+    'jogo novo', 'viagem para', 'cachorro quente', 'hamburguer', 'abraço do seu amigo', 'ingresso para o show do seu cantor favorito',
+    'passeio até a praia', 'high five', 'grande nada... desculpa', 'videochamada com seu melhor amigo', 'namorado(a)', 'bolo', 'festa surpresa', 'aumento de 10 de QI',
+    'castelo de areia', 'personagem 5 estrelas', 'burrito', 'emprego', 'estágio', 'amor recíproco', 'balde de batata frita']
+    let mensagensDeRecompesa = ['Aproveite o seu(ua): ', 'Você acaba de ganhar um(a): ', 'Não acredito! Você ganhou um(a): ', 'Receba o(a) seu(ua): ']
+        const texto = document.getElementById('texto')
+        let tentativas = 0
+        const quadrado = document.getElementById('quadrado')
+       function criarColuna(){
+        tentativas++
+        const tabelas = document.createElement('table')
+        const linha = document.createElement('tr')
+        const celula = document.createElement('td')
+        const quebra = document.createElement('br')
+        const celulas = document.querySelectorAll('.celulaPrincipal');
+        const NUMERO = document.getElementsByClassName('numero')
+        const valor = texto.value
+        console.log(numero)
+        if(texto.value == ''){
+                    texto.placeholder = 'Insira um número, por favor'
+                    return 0
+                }
+        if(isNaN(parseInt(texto.value))){
+            texto.placeholder = 'Insira apenas números'
+            return 0
+        }
+         if(parseInt(texto.value) <= 0 || parseInt(texto.value) > 1000){
+                    texto.placeholder = 'Insira apenas números entre 0 e 1000'
+                    return 0 
+                }
+            document.querySelector('.aporratoda').insertBefore(tabelas, texto);
+            tabelas.classList.add('novaTable')
+            tabelas.appendChild(linha)
+            celulas.forEach((celulinha, index) => {
+                const novaCelula = document.createElement('td')
+                linha.appendChild(novaCelula)
+                novaCelula.classList.add('celula')
+                if (index == 0){
+                novaCelula.textContent = texto.value
+                    if(texto.value == numero){
+                        novaCelula.style.backgroundColor = 'green'
+                    }
+                    else{
+                        novaCelula.style.backgroundColor = 'red'
+                    }
+                }
+                else{
+                    novaCelula.textContent = celulinha.textContent
+                }
+
+                if (index == 1){
+                    novaCelula.classList.add('divisivel')
+                    novaCelula.textContent = 'Divisível por:'
+                    const container = document.createElement('div')
+                        for(let numeros of NUMERO) {
+                        let num = parseInt(numeros.textContent)
+                        const novaDiv = document.createElement('div')
+                        const novoNumero = document.createElement('div')
+                        container.classList.add('novosDivisores')
+                        novoNumero.classList.add('novoNumero')
+                        novoNumero.textContent = num
+                        if(valor % num == 0 && parseInt(numero) % num == 0 ){
+                            novoNumero.style.backgroundColor = 'green'
+                        }
+
+                        else{
+                            novoNumero.style.backgroundColor = 'white'
+                        }
+
+                        container.appendChild(novoNumero)
+                        
+                    }
+                     novaCelula.appendChild(container)    
+            }   
+
+                if (index == 2 ){
+                    if (parseInt(valor) >= 10 && parseInt(valor) < 100){
+                        novaCelula.textContent = 'Dezena'
+                        if(valor.length == numero.length){
+                            novaCelula.style.backgroundColor = 'green'
+                        }
+                        else{
+                            novaCelula.style.backgroundColor = 'red'
+                    }
+                    }
+                        if (parseInt(valor) >= 100){
+                            novaCelula.textContent = 'Centena';
+                            if(valor.length == numero.length){
+                                novaCelula.style.backgroundColor = 'green';
+                            } else {
+                                novaCelula.style.backgroundColor = 'red';
+                            }
+                        
+                    }
+                }
+                if (index == 3){
+                    let Primo1 = true
+                    let Primo2 = true
+                        for(let i = 2; i < valor; i++){
+                            if (valor % i === 0){
+                                Primo1 = false
+                                break
+
+                            }
+                        }
+                        for(let i = 2; i < numero; i++){
+                            if (numero % i === 0){
+                                Primo2 = false
+                                break
+
+                            }
+                        }
+                        if ((Primo1 && Primo2) || (!Primo1 && !Primo2)) {
+                        novaCelula.style.backgroundColor = 'green'
+                            if (Primo1 && Primo2){
+                                novaCelula.textContent = 'Primo'
+                            }
+                            if (!Primo1 && !Primo2) {
+                                novaCelula.textContent = 'Não primo'
+                            }
+                        }
+                    else{
+                        novaCelula.style.backgroundColor = 'red'
+                        }
+                    }
+                    
+                
+
+                if (index === 4) {
+                    if (parseInt(numero) > valor) {
+                        novaCelula.style.backgroundColor = 'orange';
+                        novaCelula.textContent = '>';
+                    } else if (parseInt(numero) < valor) {
+                        novaCelula.style.backgroundColor = 'orange';
+                        novaCelula.textContent = '<';
+                    } else if (parseInt(numero) === parseInt(valor)) {
+                        novaCelula.style.backgroundColor = 'green';
+                        novaCelula.textContent = '===';
+                    }
+                }
+                 if(valor == numero){
+                    quadrado.style.display = 'block'
+                    quadrado.innerHTML = `<div class= 'nsei'>Parabéns, você acertou! <br> ${mensagensDeRecompesa[parseInt(Math.random() * mensagensDeRecompesa.length)]} ${recompensas[parseInt(Math.random() * recompensas.length)]} <button onclick="tentarDeNovo()">Tentar novamente?</button> </div>`;
+                    }
+                quebra.classList.add('novaQuebra')
+                document.querySelector('.aporratoda').insertBefore(quebra, texto);
+                celula.classList.add('celula')
+                texto.value = ''
+                if (tentativas == 7){
+                    quadrado.innerHTML = `<div class= 'nsei'>Não foi dessa vez... <br> A resposta certa era: ${numero} <br> Boa sorte na próxima vez. <br> <button onclick="tentarDeNovo()">Tentar novamente?</button> </div>`;
+                    quadrado.style.display = 'block'
+                }
+                })}
+        function tentarDeNovo(){
+            let novaTable = document.getElementsByClassName('novaTable')
+            let novaQuebra = document.getElementsByClassName('novaQuebra')
+            tentativas = 0
+            Array.from(novaTable).forEach(a => a.remove())
+            
+            Array.from(novaQuebra).forEach(b => b.remove())
+            
+            quadrado.style.display = 'none'
+            numero = String(parseInt(Math.random() * 1000))
+            console.log(numero)
+        
+        }
+           
+        
+        texto.addEventListener('keydown', (event) => {
+            if (event.key == 'Enter'){
+                criarColuna()
+            }
+            
+        })
+    </script>
+</body>
+</html> 
